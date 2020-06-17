@@ -63,7 +63,7 @@ class Category a => PseudoInverseCategory a where
 
   -- | Pseudo-invert a morphism. The pseudo-inverse of a morphism may or may not
   --   be its inverse. f is the inverse of g means that f.g = id = g.f.
-  --   If f has an inverse, then minverse f may or may not be the inverse
+  --   If f has an inverse, then piinverse f may or may not be the inverse
   --   of f.
   piinverse :: a x y -> a y x
 
