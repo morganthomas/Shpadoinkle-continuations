@@ -1,0 +1,39 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: c8f6aebb628088af4c96fb66e1ecffa63a856ef62f89256d8313592f1531099b
+
+name:           Shpadoinkle-continuations
+version:        0.1.0.0
+synopsis:       Continuations for atomic updates
+description:    The definitions in this package support Shpadoinkle's concurrency strategy by providing a Continuation abstraction representing a computation which may perform multiple steps involving I/O and (re-)reading the state in order to produce a single atomic update to the state.
+category:       Web
+author:         Morgan Thomas
+maintainer:     morgan.thomas@platonic.systems
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://gitlab.com/fresheyeball/Shpadoinkle.git
+
+library
+  exposed-modules:
+      Control.PseudoInverseCategory
+      Control.ShpadoinkleContinuation
+  other-modules:
+      Paths_Shpadoinkle_continuations
+  hs-source-dirs:
+      ./.
+  ghc-options: -Wall -Wcompat -fwarn-redundant-constraints -fwarn-incomplete-uni-patterns -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-identities
+  build-depends:
+      base >=4.12.0 && <4.16
+    , category >=0.2 && <0.3
+    , unliftio
+  default-language: Haskell2010
