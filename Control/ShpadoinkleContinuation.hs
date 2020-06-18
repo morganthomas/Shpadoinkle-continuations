@@ -54,9 +54,11 @@ done :: Continuation m a
 done = Pure id
 
 
--- | A pure state updating function can be turned into a Continuation.
-pur :: Applicative m => (a -> a) -> Continuation m a
-pur = Continuation . (, const (pure done))
+-- | A pure state updating function can be turned into a Continuation. This function
+--   is here so that users of the Continuation API can do basic things without needing
+--   to depend on the internal structure of the type.
+pur :: (a -> a) -> Continuation m a
+pur = Pure
 
 
 -- | A monadic computation of a pure state updating function can be turned into a Continuation.
