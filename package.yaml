@@ -37,6 +37,7 @@ library:
   dependencies:
     - unliftio
     - category >= 0.2 && <0.3
+    - transformers
 
 
 git: https://gitlab.com/fresheyeball/Shpadoinkle.git
