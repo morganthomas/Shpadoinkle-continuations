@@ -8,6 +8,7 @@
 
 module Control.ShpadoinkleContinuation
   ( Continuation (..), contIso
+  , ContinuationT (..), voidRunContinuationT
   , pur, impur, causes
   , runContinuation
   , MapContinuations (..)
@@ -20,6 +21,7 @@ module Control.ShpadoinkleContinuation
   ) where
 
 
+import           Control.Arrow                 (first)
 import qualified Control.Categorical.Functor   as F
 import           Control.Monad                 (liftM2, void)
 import           Control.PseudoInverseCategory
@@ -299,3 +301,32 @@ shouldUpdate sun prev model = do
         if new' == old then retry else new' <$ writeTVar p new'
       y <- sun x a
       go y p
+
+newtype ContinuationT model m a = ContinuationT
+  { runContinuationT :: m (a, Continuation m model) }
+
+
+voidRunContinuationT :: Monad m => ContinuationT model m a -> Continuation m model
+voidRunContinuationT m = Continuation . (id,) . const $ snd <$> runContinuationT m
+
+
+instance Functor m => Functor (ContinuationT model m) where
+  fmap f = ContinuationT . fmap (first f) . runContinuationT
+
+
+instance Monad m => Applicative (ContinuationT model m) where
+  pure = ContinuationT . pure . (, done)
+
+  ft <*> xt = ContinuationT $ do
+    (f, fc) <- runContinuationT ft
+    (x, xc) <- runContinuationT xt
+    return (f x, fc <> xc)
+
+
+instance Monad m => Monad (ContinuationT model m) where
+  return = ContinuationT . return . (, done)
+
+  m >>= f = ContinuationT $ do
+    (x, g) <- runContinuationT m
+    (y, h) <- runContinuationT (f x)
+    return (y, g <> h)
