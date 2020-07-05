@@ -24,6 +24,7 @@ module Control.ShpadoinkleContinuation
 import           Control.Arrow                 (first)
 import qualified Control.Categorical.Functor   as F
 import           Control.Monad                 (liftM2, void)
+import           Control.Monad.Trans.Class
 import           Control.PseudoInverseCategory
 import           GHC.Conc                      (retry)
 import           UnliftIO
@@ -330,3 +331,7 @@ instance Monad m => Monad (ContinuationT model m) where
     (x, g) <- runContinuationT m
     (y, h) <- runContinuationT (f x)
     return (y, g <> h)
+
+
+instance MonadTrans (ContinuationT model) where
+  lift = ContinuationT . fmap (, done)
