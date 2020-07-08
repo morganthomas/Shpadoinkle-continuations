@@ -8,7 +8,7 @@
 
 module Control.ShpadoinkleContinuation
   ( Continuation (..), contIso
-  , ContinuationT (..), voidRunContinuationT
+  , ContinuationT (..), voidRunContinuationT, commit
   , pur, impur, causes
   , runContinuation
   , MapContinuations (..)
@@ -305,6 +305,10 @@ shouldUpdate sun prev model = do
 
 newtype ContinuationT model m a = ContinuationT
   { runContinuationT :: m (a, Continuation m model) }
+
+
+commit :: Monad m => Continuation m model -> ContinuationT model m ()
+commit = ContinuationT . return . ((),)
 
 
 voidRunContinuationT :: Monad m => ContinuationT model m a -> Continuation m model
