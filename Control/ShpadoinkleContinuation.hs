@@ -13,6 +13,7 @@ module Control.ShpadoinkleContinuation
   , runContinuation
   , MapContinuations (..)
   , convertC
+  , voidC, voidMC
   , liftC, liftMC
   , leftC, leftMC, rightC, rightMC
   , maybeC, maybeMC, comaybe, comaybeC, comaybeMC
@@ -128,6 +129,18 @@ liftMC f g = mapMC (liftC f g)
 -- | Change the type of a continuation by applying it to the left coordinate of a tuple.
 leftC :: Functor m => Continuation m a -> Continuation m (a,b)
 leftC = liftC (\x (_,y) -> (x,y)) fst
+
+
+-- | Change a void continuation into any other type of continuation.
+voidC :: Monad m => Continuation m () -> Continuation m a
+voidC f = Continuation . (id,) $ \_ -> do
+  _ <- runContinuation f ()
+  return done
+
+
+-- | Change the type of the f-embedded void continuations into any other type of continuation.
+voidMC :: Monad m => MapContinuations f => f m () -> f m a
+voidMC = mapMC voidC
 
 
 -- | Change the type of f by applying the continuations inside f to the left coordinate of a tuple.
