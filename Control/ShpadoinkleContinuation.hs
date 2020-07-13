@@ -8,8 +8,8 @@
 
 module Control.ShpadoinkleContinuation
   ( Continuation (..), contIso
-  , ContinuationT (..), voidRunContinuationT, commit
-  , pur, impur, causes
+  , ContinuationT (..), voidRunContinuationT, kleisliT, commit
+  , pur, impur, kleisli, causes
   , runContinuation
   , MapContinuations (..)
   , convertC
@@ -70,6 +70,10 @@ impur :: Monad m => m (a -> a) -> Continuation m a
 impur m = Continuation . (id,) . const $ do
   f <- m
   return $ Continuation (f, const (return done))
+
+
+kleisli :: (a -> m (Continuation m a)) -> Continuation m a
+kleisli = Continuation . (id,)
 
 
 -- | A monadic computation can be turned into a Continuation which does not touch the state.
@@ -326,6 +330,10 @@ commit = ContinuationT . return . ((),)
 
 voidRunContinuationT :: Monad m => ContinuationT model m a -> Continuation m model
 voidRunContinuationT m = Continuation . (id,) . const $ snd <$> runContinuationT m
+
+
+kleisliT :: Monad m => (model -> ContinuationT model m a) -> Continuation m model
+kleisliT f = kleisli $ \x -> return . voidRunContinuationT $ f x
 
 
 instance Functor m => Functor (ContinuationT model m) where
