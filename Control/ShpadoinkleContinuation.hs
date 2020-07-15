@@ -13,7 +13,7 @@ module Control.ShpadoinkleContinuation
   , runContinuation
   , MapContinuations (..)
   , convertC
-  , voidC, voidMC
+  , voidC, voidMC, forgetMC
   , liftC, liftMC
   , leftC, leftMC, rightC, rightMC
   , maybeC, maybeMC, comaybe, comaybeC, comaybeMC
@@ -104,7 +104,7 @@ runContinuation' f (Pure g) _ = return (g.f)
 -- | f is a Functor to Hask from the category where the objects are
 --   Continuation types and the morphisms are functions.
 class MapContinuations f where
-  mapMC :: Functor m => (Continuation m a -> Continuation m b) -> f m a -> f m b
+  mapMC :: Functor m => Functor n => (Continuation m a -> Continuation n b) -> f m a -> f n b
 
 
 instance MapContinuations Continuation where
@@ -130,11 +130,6 @@ liftMC :: Functor m => MapContinuations f => (a -> b -> b) -> (b -> a) -> f m a 
 liftMC f g = mapMC (liftC f g)
 
 
--- | Change the type of a continuation by applying it to the left coordinate of a tuple.
-leftC :: Functor m => Continuation m a -> Continuation m (a,b)
-leftC = liftC (\x (_,y) -> (x,y)) fst
-
-
 -- | Change a void continuation into any other type of continuation.
 voidC :: Monad m => Continuation m () -> Continuation m a
 voidC f = Continuation . (id,) $ \_ -> do
@@ -145,6 +140,16 @@ voidC f = Continuation . (id,) $ \_ -> do
 -- | Change the type of the f-embedded void continuations into any other type of continuation.
 voidMC :: Monad m => MapContinuations f => f m () -> f m a
 voidMC = mapMC voidC
+
+
+-- | Forget about the continuations.
+forgetMC :: Monad m => Monad n => MapContinuations f => f m a -> f n b
+forgetMC = mapMC (const done)
+
+
+--- | Change the type of a continuation by applying it to the left coordinate of a tuple.
+leftC :: Functor m => Continuation m a -> Continuation m (a,b)
+leftC = liftC (\x (_,y) -> (x,y)) fst
 
 
 -- | Change the type of f by applying the continuations inside f to the left coordinate of a tuple.
