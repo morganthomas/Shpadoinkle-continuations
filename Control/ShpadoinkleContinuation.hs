@@ -13,7 +13,7 @@ module Control.ShpadoinkleContinuation
   , runContinuation
   , MapContinuations (..)
   , convertC
-  , voidC, voidMC, forgetMC
+  , voidC, voidMC, forgetMC, forgetMC'
   , liftC, liftMC
   , leftC, leftMC, rightC, rightMC
   , maybeC, maybeMC, comaybe, comaybeC, comaybeMC
@@ -145,6 +145,11 @@ voidMC = mapMC voidC
 -- | Forget about the continuations.
 forgetMC :: Monad m => Monad n => MapContinuations f => f m a -> f n b
 forgetMC = mapMC (const done)
+
+
+-- | Forget about the continuations without changing the monad. This can be easier on type inference compared to forgetMC.
+forgetMC' :: Monad m => MapContinuations f => f m a -> f m b
+forgetMC' = forgetMC
 
 
 --- | Change the type of a continuation by applying it to the left coordinate of a tuple.
