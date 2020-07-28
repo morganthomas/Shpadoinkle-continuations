@@ -9,7 +9,7 @@
 module Control.ShpadoinkleContinuation
   ( Continuation (..), contIso
   , ContinuationT (..), voidRunContinuationT, kleisliT, commit
-  , pur, impur, kleisli, causes
+  , done, pur, impur, kleisli, causes
   , runContinuation
   , MapContinuations (..)
   , convertC
@@ -54,15 +54,17 @@ data Continuation m a = Continuation (a -> a, a -> m (Continuation m a))
                       | Pure (a -> a)
 
 
-done :: Continuation m a
-done = Pure id
-
 
 -- | A pure state updating function can be turned into a Continuation. This function
 --   is here so that users of the Continuation API can do basic things without needing
 --   to depend on the internal structure of the type.
 pur :: (a -> a) -> Continuation m a
 pur = Pure
+
+
+-- | A continuation which doesn't touch the state and doesn't have any side effects.
+done :: Continuation m a
+done = pur id
 
 
 -- | A monadic computation of a pure state updating function can be turned into a Continuation.
