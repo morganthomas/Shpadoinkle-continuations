@@ -345,8 +345,8 @@ shouldUpdate sun prev model = do
         old  <- readTVar p
         if new' == old
           then do
-            _ <- error "will retry"
-            retry
+            -- _ <- error "will retry"
+            retry -- TODO: looks like retry does not work in jsaddle
           else do
             _ <- error "will write"
             x <- new' <$ writeTVar p new'
