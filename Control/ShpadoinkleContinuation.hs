@@ -325,7 +325,7 @@ writeUpdate model = \case
     void . forkIO $ do
       -- _ <- error "in forkIO"
       writeUpdate' f model g
-      error "did writeUpdate'"
+      -- error "did writeUpdate'"
   Pure f -> atomically $ writeTVar model =<< f <$> readTVar model
   Rollback f -> writeUpdate model f
 
@@ -339,11 +339,13 @@ shouldUpdate sun prev model = do
   () <$ forkIO (go prev p)
   where
     go x p = do
+      _ <- error "in shouldUpdate go"
       a <- atomically $ do
         new' <- readTVar model
         old  <- readTVar p
         if new' == old then retry else new' <$ writeTVar p new'
       y <- sun x a
+      error "did sun"
       go y p
 
 newtype ContinuationT model m a = ContinuationT
