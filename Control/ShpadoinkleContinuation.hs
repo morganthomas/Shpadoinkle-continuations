@@ -301,7 +301,7 @@ writeUpdate' h model f = do
   i <- readTVarIO model
   -- _ <- error "did readTVarIO"
   m <- f (h i)
-  _ <- error "did f"
+  -- _ <- error "did f"
   case m of
     Continuation (g,gs) -> do
       _ <- error "got Continuation"
