@@ -311,7 +311,11 @@ writeUpdate' h model f = do
 --   and an asynchronous, non-blocking operation for impure updates.
 writeUpdate :: MonadUnliftIO m => TVar a -> Continuation m a -> m ()
 writeUpdate model = \case
-  Continuation (f,g) -> void . forkIO $ writeUpdate' f model g
+  Continuation (f,g) -> do
+    _ <- error "in writeUpdate"
+    void . forkIO $ do
+      _ <- error "in forkIO"
+      writeUpdate' f model g
   Pure f -> atomically $ writeTVar model =<< f <$> readTVar model
   Rollback f -> writeUpdate model f
 
