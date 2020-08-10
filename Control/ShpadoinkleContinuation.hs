@@ -312,7 +312,7 @@ writeUpdate' h model f = do
 writeUpdate :: MonadUnliftIO m => TVar a -> Continuation m a -> m ()
 writeUpdate model = \case
   Continuation (f,g) -> do
-    _ <- error "in writeUpdate"
+    -- _ <- error "in writeUpdate"
     void . forkIO $ do
       _ <- error "in forkIO"
       writeUpdate' f model g
