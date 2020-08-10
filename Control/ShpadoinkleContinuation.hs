@@ -343,7 +343,15 @@ shouldUpdate sun prev model = do
       a <- atomically $ do
         new' <- readTVar model
         old  <- readTVar p
-        if new' == old then retry else new' <$ writeTVar p new'
+        if new' == old
+          then do
+            _ <- error "will retry"
+            retry
+          else do
+            _ <- error "will write"
+            x <- new' <$ writeTVar p new'
+            _ <- error "did write"
+            return x
       _ <- error "did atomically"
       y <- sun x a
       _ <- error "did sun"
