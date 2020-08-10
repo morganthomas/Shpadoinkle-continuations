@@ -325,7 +325,7 @@ writeUpdate model = \case
     void . forkIO $ do
       -- _ <- error "in forkIO"
       writeUpdate' f model g
-      _ <- error "did writeUpdate'"
+      error "did writeUpdate'"
   Pure f -> atomically $ writeTVar model =<< f <$> readTVar model
   Rollback f -> writeUpdate model f
 
