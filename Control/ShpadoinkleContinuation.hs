@@ -299,7 +299,7 @@ instance Monad m => Monoid (Continuation m a) where
 writeUpdate' :: MonadUnliftIO m => (a -> a) -> TVar a -> (a -> m (Continuation m a)) -> m ()
 writeUpdate' h model f = do
   i <- readTVarIO model
-  _ <- error "did readTVarIO"
+  -- _ <- error "did readTVarIO"
   m <- f (h i)
   _ <- error "did f"
   case m of
