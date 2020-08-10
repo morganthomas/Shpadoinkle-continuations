@@ -307,7 +307,7 @@ writeUpdate' h model f = do
       -- _ <- error "got Continuation"
       writeUpdate' (g.h) model gs
     Pure g -> do
-      _ <- error "got Pure"
+      -- _ <- error "got Pure"
       atomically $ writeTVar model =<< g.h <$> readTVar model
       error "did atomically"
     Rollback gs -> do
