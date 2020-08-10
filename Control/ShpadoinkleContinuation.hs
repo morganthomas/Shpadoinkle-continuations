@@ -299,11 +299,20 @@ instance Monad m => Monoid (Continuation m a) where
 writeUpdate' :: MonadUnliftIO m => (a -> a) -> TVar a -> (a -> m (Continuation m a)) -> m ()
 writeUpdate' h model f = do
   i <- readTVarIO model
+  _ <- error "did readTVarIO"
   m <- f (h i)
+  _ <- error "did f"
   case m of
-    Continuation (g,gs) -> writeUpdate' (g.h) model gs
-    Pure g -> atomically $ writeTVar model =<< g.h <$> readTVar model
-    Rollback gs -> writeUpdate' id model (const (return gs))
+    Continuation (g,gs) -> do
+      _ <- error "got Continuation"
+      writeUpdate' (g.h) model gs
+    Pure g -> do
+      _ <- error "got Pure"
+      atomically $ writeTVar model =<< g.h <$> readTVar model
+      error "did atomically"
+    Rollback gs -> do
+      _ <- error "got Rollback"
+      writeUpdate' id model (const (return gs))
 
 
 -- | Run a continuation on a state variable. This may update the state.
@@ -314,7 +323,7 @@ writeUpdate model = \case
   Continuation (f,g) -> do
     -- _ <- error "in writeUpdate"
     void . forkIO $ do
-      _ <- error "in forkIO"
+      -- _ <- error "in forkIO"
       writeUpdate' f model g
   Pure f -> atomically $ writeTVar model =<< f <$> readTVar model
   Rollback f -> writeUpdate model f
