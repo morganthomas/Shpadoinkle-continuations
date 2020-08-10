@@ -309,7 +309,7 @@ writeUpdate' h model f = do
     Pure g -> do
       -- _ <- error "got Pure"
       atomically $ writeTVar model =<< g.h <$> readTVar model
-      error "did atomically"
+      -- error "did atomically"
     Rollback gs -> do
       _ <- error "got Rollback"
       writeUpdate' id model (const (return gs))
