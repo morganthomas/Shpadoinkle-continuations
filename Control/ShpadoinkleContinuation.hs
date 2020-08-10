@@ -339,13 +339,14 @@ shouldUpdate sun prev model = do
   () <$ forkIO (go prev p)
   where
     go x p = do
-      _ <- error "in shouldUpdate go"
+      -- _ <- error "in shouldUpdate go"
       a <- atomically $ do
         new' <- readTVar model
         old  <- readTVar p
         if new' == old then retry else new' <$ writeTVar p new'
+      _ <- error "did atomically"
       y <- sun x a
-      error "did sun"
+      _ <- error "did sun"
       go y p
 
 newtype ContinuationT model m a = ContinuationT
