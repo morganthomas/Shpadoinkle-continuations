@@ -304,7 +304,7 @@ writeUpdate' h model f = do
   -- _ <- error "did f"
   case m of
     Continuation (g,gs) -> do
-      _ <- error "got Continuation"
+      -- _ <- error "got Continuation"
       writeUpdate' (g.h) model gs
     Pure g -> do
       _ <- error "got Pure"
