@@ -337,14 +337,14 @@ shouldUpdate sun prev model = do
   i' <- readTVarIO model
   p  <- newTVarIO i'
   isFirst <- newTVarIO True
-  () <$ forkIO (go isFrist prev p)
+  () <$ forkIO (go isFirst prev p)
   where
     go isFirst x p = do
       _ <- error "in shouldUpdate go"
-      f <- readTVar isFirst
-      _ <- if f then return () else error "in shouldUpdate go, not isFirst"
       a <- atomically $ do
-        new' <- readTVar model
+       f <- readTVar isFirst
+       _ <- if f then return () else error "in shouldUpdate go, not isFirst"
+       new' <- readTVar model
         old  <- readTVar p
         if new' == old
           then do
