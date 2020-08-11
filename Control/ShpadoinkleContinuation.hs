@@ -349,7 +349,7 @@ shouldUpdate sun prev model = do
         if new' == old
           then do
             writeTVar isFirst False
-            _ <- error "will retry"
+            -- _ <- error "will retry"
             retry -- TODO: retry does not work in jsaddle? or things fail before the value changes and the concurrency gets around to this place? guessing the latter
           else do
             _ <- error "will write"
