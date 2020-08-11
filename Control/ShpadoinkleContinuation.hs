@@ -341,25 +341,28 @@ shouldUpdate sun prev model = do
   where
     go isFirst x p = do
       -- _ <- error "in shouldUpdate go"
+      f <- readTVarIO isFirst
       a <- atomically $ do
         f <- readTVar isFirst
         _ <- if f then return () else error "in shouldUpdate go, not isFirst"
         new' <- readTVar model
         old  <- readTVar p
         if new' == old
-          then do
-            writeTVar isFirst False
+          then do return new'
+            -- writeTVar isFirst False
             -- _ <- error "will retry"
-            retry -- TODO: retry does not work in jsaddle? or things fail before the value changes and the concurrency gets around to this place? guessing the latter
+            -- retry -- TODO: retry does not work in jsaddle? or things fail before the value changes and the concurrency gets around to this place? guessing the latter
           else do
             _ <- error "will write"
+            writeTVar isFirst False
             x <- new' <$ writeTVar p new'
             _ <- error "did write"
             return x
       _ <- error "did atomically"
-      y <- sun x a
-      _ <- error "did sun"
-      go isFirst y p
+      if f then go isFirst x p else do
+        y <- sun x a
+        _ <- error "did sun"
+        go isFirst y p
 
 newtype ContinuationT model m a = ContinuationT
   { runContinuationT :: m (a, Continuation m model) }
