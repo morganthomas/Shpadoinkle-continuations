@@ -339,7 +339,7 @@ shouldUpdate sun prev model = do
   isFirst <- newTVarIO True
   () <$ forkIO (go True prev p)
   where
-    go isFirst x p = do
+    go x p = do
       _ <- error "in shouldUpdate go"
       f <- readTVar isFirst
       _ <- if f then return () else error "in shouldUpdate go, not isFirst"
@@ -359,7 +359,7 @@ shouldUpdate sun prev model = do
       _ <- error "did atomically"
       y <- sun x a
       _ <- error "did sun"
-      go False y p
+      go y p
 
 newtype ContinuationT model m a = ContinuationT
   { runContinuationT :: m (a, Continuation m model) }
