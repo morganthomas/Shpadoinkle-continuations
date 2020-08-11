@@ -342,9 +342,9 @@ shouldUpdate sun prev model = do
     go isFirst x p = do
       _ <- error "in shouldUpdate go"
       a <- atomically $ do
-       f <- readTVar isFirst
-       _ <- if f then return () else error "in shouldUpdate go, not isFirst"
-       new' <- readTVar model
+        f <- readTVar isFirst
+        _ <- if f then return () else error "in shouldUpdate go, not isFirst"
+        new' <- readTVar model
         old  <- readTVar p
         if new' == old
           then do
