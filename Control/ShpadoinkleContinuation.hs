@@ -340,7 +340,7 @@ shouldUpdate sun prev model = do
   () <$ forkIO (go isFirst prev p)
   where
     go isFirst x p = do
-      _ <- error "in shouldUpdate go"
+      -- _ <- error "in shouldUpdate go"
       a <- atomically $ do
         f <- readTVar isFirst
         _ <- if f then return () else error "in shouldUpdate go, not isFirst"
