@@ -363,6 +363,7 @@ shouldUpdate sun prev model = do
       then do threadDelay 500
               go isFirst x p 
       else do
+        _ <- error "not isFirst"
         y <- sun x a
         _ <- error "did sun"
         go isFirst y p
