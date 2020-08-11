@@ -336,17 +336,21 @@ shouldUpdate :: MonadUnliftIO m => Eq a => (b -> a -> m b) -> b -> TVar a -> m (
 shouldUpdate sun prev model = do
   i' <- readTVarIO model
   p  <- newTVarIO i'
-  () <$ forkIO (go prev p)
+  isFirst <- newTVarIO True
+  () <$ forkIO (go True prev p)
   where
-    go x p = do
-      -- _ <- error "in shouldUpdate go"
+    go isFirst x p = do
+      _ <- error "in shouldUpdate go"
+      f <- readTVar isFirst
+      _ <- if f then return () else error "in shouldUpdate go, not isFirst"
       a <- atomically $ do
         new' <- readTVar model
         old  <- readTVar p
         if new' == old
           then do
-            -- _ <- error "will retry"
-            retry -- TODO: looks like retry does not work in jsaddle
+            writeTVar isFirst False
+            _ <- error "will retry"
+            retry -- TODO: retry does not work in jsaddle? or things fail before the value changes and the concurrency gets around to this place? guessing the latter
           else do
             _ <- error "will write"
             x <- new' <$ writeTVar p new'
@@ -355,7 +359,7 @@ shouldUpdate sun prev model = do
       _ <- error "did atomically"
       y <- sun x a
       _ <- error "did sun"
-      go y p
+      go False y p
 
 newtype ContinuationT model m a = ContinuationT
   { runContinuationT :: m (a, Continuation m model) }
