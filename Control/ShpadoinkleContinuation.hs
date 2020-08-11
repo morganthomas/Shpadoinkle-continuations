@@ -358,8 +358,11 @@ shouldUpdate sun prev model = do
             x <- new' <$ writeTVar p new'
             _ <- error "did write"
             return x
-      _ <- error "did atomically"
-      if f then go isFirst x p else do
+      -- _ <- error "did atomically"
+      if f
+      then do threadDelay 500
+              go isFirst x p 
+      else do
         y <- sun x a
         _ <- error "did sun"
         go isFirst y p
